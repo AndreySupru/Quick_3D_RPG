@@ -1,9 +1,4 @@
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.118/build/three.module.js';
-
-import {entity} from "./entity.js";
-
-
-export const player_input = (() => {
+const player_input = (() => {
 
   class PickableComponent extends entity.Component {
     constructor() {
@@ -20,7 +15,7 @@ export const player_input = (() => {
       this._params = params;
       this._Init();
     }
-  
+
     _Init() {
       this._keys = {
         forward: false,
@@ -35,7 +30,7 @@ export const player_input = (() => {
       document.addEventListener('keyup', (e) => this._onKeyUp(e), false);
       document.addEventListener('mouseup', (e) => this._onMouseUp(e), false);
     }
-  
+
     _onMouseUp(event) {
       const rect = document.getElementById('threejs').getBoundingClientRect();
       const pos = {
@@ -96,7 +91,7 @@ export const player_input = (() => {
           break;
       }
     }
-  
+
     _onKeyUp(event) {
       switch(event.keyCode) {
         case 87: // w

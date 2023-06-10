@@ -1,9 +1,4 @@
-import {entity} from './entity.js';
-
-import {FBXLoader} from 'https://cdn.jsdelivr.net/npm/three@0.118.1/examples/jsm/loaders/FBXLoader.js';
-
-
-export const equip_weapon_component = (() => {
+const equip_weapon_component = (() => {
 
   class EquipWeapon extends entity.Component {
     constructor(params) {
@@ -59,7 +54,7 @@ export const equip_weapon_component = (() => {
     }
 
     _LoadModels(item, cb) {
-      const loader = new FBXLoader();
+      const loader = new THREE.FBXLoader();
       loader.setPath('./resources/weapons/FBX/');
       loader.load(item.RenderParams.name + '.fbx', (fbx) => {
         this._target = fbx;

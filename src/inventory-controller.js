@@ -1,7 +1,4 @@
-import {entity} from './entity.js';
-
-
-export const inventory_controller = (() => {
+const inventory_controller = (() => {
 
   class InventoryController extends entity.Component {
     constructor(params) {
@@ -38,7 +35,7 @@ export const inventory_controller = (() => {
           ev.preventDefault();
           const data = ev.dataTransfer.getData('text/plain');
           const other = document.getElementById(data);
-    
+
           this._OnItemDropped(other, element);
         };
       }
@@ -87,7 +84,7 @@ export const inventory_controller = (() => {
           msg.added = true;
 
           this._SetItemAtSlot(k, msg.value);
-  
+
           break;
         }
       }
@@ -121,7 +118,7 @@ export const inventory_controller = (() => {
     }
   };
 
-  
+
   return {
       InventoryController: InventoryController,
       InventoryItem: InventoryItem,

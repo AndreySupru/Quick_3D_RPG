@@ -1,7 +1,4 @@
-import {entity} from './entity.js';
-
-
-export const ui_controller = (() => {
+const ui_controller = (() => {
 
   class UIController extends entity.Component {
     constructor(params) {
@@ -9,7 +6,7 @@ export const ui_controller = (() => {
       this._params = params;
       this._quests = {};
     }
-  
+
     InitComponent() {
       this._iconBar = {
         stats: document.getElementById('icon-bar-stats'),
@@ -65,7 +62,7 @@ export const ui_controller = (() => {
       this._ui.stats.style.visibility = 'hidden';
       this._ui.quests.style.visibility = 'hidden';
     }
-    
+
     _OnQuestsClicked(msg) {
       const visibility = this._ui.quests.style.visibility;
       this._HideUI();

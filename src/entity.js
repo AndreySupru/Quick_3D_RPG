@@ -1,123 +1,120 @@
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.118/build/three.module.js';
+const entity = (() => {
 
+	class Entity {
+		constructor() {
+			this._name = null;
+			this._components = {};
 
-export const entity = (() => {
+			this._position = new THREE.Vector3();
+			this._rotation = new THREE.Quaternion();
+			this._handlers = {};
+			this._parent = null;
+		}
 
-  class Entity {
-    constructor() {
-      this._name = null;
-      this._components = {};
+		_RegisterHandler(n, h) {
+			if (!(n in this._handlers)) {
+				this._handlers[n] = [];
+			}
+			this._handlers[n].push(h);
+		}
 
-      this._position = new THREE.Vector3();
-      this._rotation = new THREE.Quaternion();
-      this._handlers = {};
-      this._parent = null;
-    }
+		SetParent(p) {
+			this._parent = p;
+		}
 
-    _RegisterHandler(n, h) {
-      if (!(n in this._handlers)) {
-        this._handlers[n] = [];
-      }
-      this._handlers[n].push(h);
-    }
+		SetName(n) {
+			this._name = n;
+		}
 
-    SetParent(p) {
-      this._parent = p;
-    }
+		get Name() {
+			return this._name;
+		}
 
-    SetName(n) {
-      this._name = n;
-    }
+		SetActive(b) {
+			this._parent.SetActive(this, b);
+		}
 
-    get Name() {
-      return this._name;
-    }
+		AddComponent(c) {
+			c.SetParent(this);
+			this._components[c.constructor.name] = c;
 
-    SetActive(b) {
-      this._parent.SetActive(this, b);
-    }
+			c.InitComponent();
+		}
 
-    AddComponent(c) {
-      c.SetParent(this);
-      this._components[c.constructor.name] = c;
+		GetComponent(n) {
+			return this._components[n];
+		}
 
-      c.InitComponent();
-    }
+		FindEntity(n) {
+			return this._parent.Get(n);
+		}
 
-    GetComponent(n) {
-      return this._components[n];
-    }
+		Broadcast(msg) {
+			if (!(msg.topic in this._handlers)) {
+				return;
+			}
 
-    FindEntity(n) {
-      return this._parent.Get(n);
-    }
+			for (let curHandler of this._handlers[msg.topic]) {
+				curHandler(msg);
+			}
+		}
 
-    Broadcast(msg) {
-      if (!(msg.topic in this._handlers)) {
-        return;
-      }
+		SetPosition(p) {
+			this._position.copy(p);
+			this.Broadcast({
+					topic: 'update.position',
+					value: this._position,
+			});
+		}
 
-      for (let curHandler of this._handlers[msg.topic]) {
-        curHandler(msg);
-      }
-    }
+		SetQuaternion(r) {
+			this._rotation.copy(r);
+			this.Broadcast({
+					topic: 'update.rotation',
+					value: this._rotation,
+			});
+		}
 
-    SetPosition(p) {
-      this._position.copy(p);
-      this.Broadcast({
-          topic: 'update.position',
-          value: this._position,
-      });
-    }
+		Update(timeElapsed) {
+			for (let k in this._components) {
+				this._components[k].Update(timeElapsed);
+			}
+		}
+	};
 
-    SetQuaternion(r) {
-      this._rotation.copy(r);
-      this.Broadcast({
-          topic: 'update.rotation',
-          value: this._rotation,
-      });
-    }
+	class Component {
+		constructor() {
+			this._parent = null;
+		}
 
-    Update(timeElapsed) {
-      for (let k in this._components) {
-        this._components[k].Update(timeElapsed);
-      }
-    }
-  };
+		SetParent(p) {
+			this._parent = p;
+		}
 
-  class Component {
-    constructor() {
-      this._parent = null;
-    }
+		InitComponent() {}
 
-    SetParent(p) {
-      this._parent = p;
-    }
+		GetComponent(n) {
+			return this._parent.GetComponent(n);
+		}
 
-    InitComponent() {}
+		FindEntity(n) {
+			return this._parent.FindEntity(n);
+		}
 
-    GetComponent(n) {
-      return this._parent.GetComponent(n);
-    }
+		Broadcast(m) {
+			if (this._parent) this._parent.Broadcast(m);
+		}
 
-    FindEntity(n) {
-      return this._parent.FindEntity(n);
-    }
+		Update(_) {}
 
-    Broadcast(m) {
-      this._parent.Broadcast(m);
-    }
+		_RegisterHandler(n, h) {
+			this._parent._RegisterHandler(n, h);
+		}
+	};
 
-    Update(_) {}
-
-    _RegisterHandler(n, h) {
-      this._parent._RegisterHandler(n, h);
-    }
-  };
-
-  return {
-    Entity: Entity,
-    Component: Component,
-  };
+	return {
+		Entity: Entity,
+		Component: Component,
+	};
 
 })();

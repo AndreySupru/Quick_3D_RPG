@@ -1,6 +1,4 @@
-
-
-export const entity_manager = (() => {
+const entity_manager = (() => {
 
   class EntityManager {
     constructor() {
